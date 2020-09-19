@@ -1,3 +1,5 @@
+![build-test](https://github.com/rkorkosz/rlog/workflows/Go/badge.svg)
+
 # Rlog is a cli blog utility
 
 # Usage
