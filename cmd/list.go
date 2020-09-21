@@ -22,12 +22,10 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/rkorkosz/rlog/internal/app/rlog"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // listCmd represents the list command
@@ -35,15 +33,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List entries",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
-		if err != nil {
-			return err
-		}
-		entries, err := storage.List()
-		if err != nil {
-			return err
-		}
-		return json.NewEncoder(os.Stdout).Encode(entries)
+		return rlog.NewService(os.Stdout).List()
 	},
 }
 

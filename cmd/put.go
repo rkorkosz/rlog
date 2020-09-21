@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"encoding/json"
 	"os"
 	"strings"
 
@@ -30,7 +29,6 @@ import (
 	"github.com/rkorkosz/rlog/internal/pkg/editor"
 	"github.com/rkorkosz/rlog/internal/pkg/slug"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // putCmd represents the put command
@@ -38,10 +36,7 @@ var putCmd = &cobra.Command{
 	Use:   "put",
 	Short: "Put entry",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
-		if err != nil {
-			return err
-		}
+		rl := rlog.NewService(os.Stdout)
 		input, err := editor.CaptureFromEditor()
 		if err != nil {
 			return err
@@ -52,11 +47,7 @@ var putCmd = &cobra.Command{
 			Slug:  slug.Slug(spl[0]),
 			Text:  strings.TrimSpace(spl[1]),
 		}
-		err = storage.Put(e)
-		if err != nil {
-			return err
-		}
-		return json.NewEncoder(os.Stdout).Encode(&e)
+		return rl.Put(e)
 	},
 }
 

@@ -22,12 +22,10 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/rkorkosz/rlog/internal/app/rlog"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // getCmd represents the get command
@@ -35,15 +33,8 @@ var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get entry by slug",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
-		if err != nil {
-			return err
-		}
-		entry, err := storage.Get(args[0])
-		if err != nil {
-			return err
-		}
-		return json.NewEncoder(os.Stdout).Encode(entry)
+		rl := rlog.NewService(os.Stdout)
+		return rl.Get(args[0])
 	},
 }
 
