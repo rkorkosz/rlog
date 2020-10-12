@@ -26,6 +26,7 @@ import (
 
 	"github.com/rkorkosz/rlog/internal/app/rlog"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // getCmd represents the get command
@@ -33,8 +34,11 @@ var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get entry by slug",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		rl := rlog.NewService(os.Stdout)
-		return rl.Get(args[0])
+		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
+		if err != nil {
+			return err
+		}
+		return rlog.NewService(os.Stdout, storage, rlog.RenderJSON).Get(args[0])
 	},
 }
 

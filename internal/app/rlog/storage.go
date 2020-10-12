@@ -1,18 +1,9 @@
 package rlog
 
 import (
-	"encoding/json"
 	"errors"
-	"os"
 	"sync"
 )
-
-type EntryStorage interface {
-	Get(slug string) (*Entry, error)
-	Put(e Entry) error
-	Delete(slug string) error
-	List() ([]Entry, error)
-}
 
 type Cache struct {
 	mu   sync.RWMutex
@@ -60,26 +51,4 @@ func (c *Cache) List() ([]Entry, error) {
 		out = append(out, v)
 	}
 	return out, nil
-}
-
-func (c *Cache) Dump() error {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	file, err := os.OpenFile(c.path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0755)
-	if err != nil {
-		return nil
-	}
-	defer file.Close()
-	return json.NewEncoder(file).Encode(&c.db)
-}
-
-func (c *Cache) Load() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	file, err := os.Open(c.path)
-	if err != nil {
-		return nil
-	}
-	defer file.Close()
-	return json.NewDecoder(file).Decode(&c.db)
 }

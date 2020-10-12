@@ -29,6 +29,7 @@ import (
 	"github.com/rkorkosz/rlog/internal/pkg/editor"
 	"github.com/rkorkosz/rlog/internal/pkg/slug"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // putCmd represents the put command
@@ -36,7 +37,11 @@ var putCmd = &cobra.Command{
 	Use:   "put",
 	Short: "Put entry",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		rl := rlog.NewService(os.Stdout)
+		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
+		if err != nil {
+			return err
+		}
+		rl := rlog.NewService(os.Stdout, storage, rlog.RenderJSON)
 		input, err := editor.CaptureFromEditor()
 		if err != nil {
 			return err

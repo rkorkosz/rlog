@@ -26,6 +26,7 @@ import (
 
 	"github.com/rkorkosz/rlog/internal/app/rlog"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // listCmd represents the list command
@@ -33,7 +34,11 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List entries",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return rlog.NewService(os.Stdout).List()
+		storage, err := rlog.NewBoltStorage(viper.GetString("dbpath"), "entries")
+		if err != nil {
+			return err
+		}
+		return rlog.NewService(os.Stdout, storage, rlog.RenderJSON).List()
 	},
 }
 

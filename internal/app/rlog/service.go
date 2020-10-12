@@ -2,9 +2,6 @@ package rlog
 
 import (
 	"io"
-	"log"
-
-	"github.com/spf13/viper"
 )
 
 type Storage interface {
@@ -22,14 +19,10 @@ type Service struct {
 	out      io.Writer
 }
 
-func NewService(out io.Writer) *Service {
-	s, err := NewBoltStorage(viper.GetString("dbpath"), "entries")
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewService(out io.Writer, s Storage, r Renderer) *Service {
 	return &Service{
 		storage:  s,
-		renderer: RenderJSON,
+		renderer: r,
 		out:      out,
 	}
 }
